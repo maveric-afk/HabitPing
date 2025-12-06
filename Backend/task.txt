@@ -1,0 +1,19 @@
+#User:-
+1. NickName
+2. Email
+3. Password
+4. Points
+5. Badges[]
+6. Tasks/Routines []
+
+#Task:-
+1. Title
+2. description?
+3. StartTime
+4. EndTime
+5. Categories[]
+6. Color
+7. StateOfCompletion
+8. ReminderSent
+
+LeaderBoard:
