@@ -14,11 +14,15 @@ const taskSchema=new mongoose.Schema({
     End:{
         type:String,
     },
-    Categories:[
-
-    ],
+    Category:{
+        type:String,
+        required:true,
+        default:'Other'
+    },
     Color:{
-        type:String
+        type:String,
+        required:true,
+        default:'#fff'
     },
     State:{
         type:Number,
@@ -29,6 +33,20 @@ const taskSchema=new mongoose.Schema({
         type:Boolean,
     }
 },{timestamps:true});
+
+// Health & Fitness
+
+// Learning & Study
+
+// Work & Productivity
+
+// Self-Care & Wellness
+
+// Home & Personal Life
+
+// Finance & Money
+
+// Social & Lifestyle
 
 const taskModel=mongoose.model('task',taskSchema);
 module.exports=taskModel;

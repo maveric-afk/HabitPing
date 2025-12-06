@@ -1,14 +1,22 @@
 import { motion } from "framer-motion"
 import { User, Trophy, Plus } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useState } from "react"
 import LoadingScreen from "../components/LoadingScreen"
 import Background from '../components/Background'
 import { useNavigate } from "react-router-dom"
+import Profile from "../components/Profile"
+import api from "../api/axios"
+import toast from "react-hot-toast"
+import TaskCard from "../components/TaskCard"
 
 export default function Home() {
   const [isHoveringButton, setIsHoveringButton] = useState(false)
   const[loading,setLoading]=useState(true)
+  const[loggedIn,setLoggedIn]=useState(false);
+  const[user,setUser]=useState({});
+  const[alltasks,setAlltasks]=useState([])
+  const [sliderOpen, setSliderOpen] = useState(false)
 
   const navigate=useNavigate();
 
@@ -17,6 +25,34 @@ export default function Home() {
         setLoading(false)
     }, 3000);
   },[])
+
+  useEffect(()=>{
+    api.get('/api/user/')
+    .then((res)=>{
+      if(res.data.user){
+        setUser(res.data.user);
+        setLoggedIn(true);
+      }
+    })
+    .catch((e)=>{
+      console.log(e);
+    })
+  },[])
+
+
+  useEffect(()=>{
+    api.get('/api/task/all')
+    .then((res)=>{
+      if(res.data.error){
+        toast.error(res.data.error);
+        navigate('/signin')
+      }
+      else if(res.data.tasks){
+        setAlltasks(res.data.tasks);
+      }
+    })
+  },[])
+
   // Animation variants
   const navbarVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -47,6 +83,35 @@ export default function Home() {
     tap: { scale: 0.95 },
   }
 
+  function handleLogout(e){
+    api.get('/api/user/logout')
+    .then((res)=>{
+      toast.success(res.data.success);
+      setSliderOpen(false);
+      setLoggedIn(false)
+    })
+    .catch((e)=>{
+      console.log(e);
+    })
+  }
+
+  function handleClickUser(e){
+    if(!loggedIn){
+      navigate('/signup')
+    }
+    else if(loggedIn){
+      setSliderOpen(true);
+    }
+  }
+
+  const userTasks=[];
+
+  alltasks.forEach((task)=>{
+    if(user.Tasks.includes(task._id)){
+      userTasks.push(task);
+    }
+  })
+ 
   return (
     <div>
         {
@@ -74,7 +139,7 @@ export default function Home() {
                 variants={iconVariants}
                 whileHover="hover"
                 whileTap="tap"
-                onClick={(e)=>{navigate('/signup')}}
+                onClick={handleClickUser}
                 className="p-2 rounded-full hover:bg-gray-50 transition-colors"
                 aria-label="Profile"
               >
@@ -97,7 +162,18 @@ export default function Home() {
       </motion.nav>
 
       {/* Main body with centered text */}
-      <main className="pt-16 min-h-screen flex items-center justify-center px-4">
+      {loggedIn && userTasks.length>0
+      ?<div className="grid grid-cols-1 gap-8 mt-[10rem] mx-[1rem] lg:mt-[15rem] lg:mx-[5rem] md:gap-6">
+       {userTasks.map((task)=>(
+        <div>
+          {task.Start
+          ?<TaskCard title={task.Title} description={task.Description} bgColor={task.Color} category={task.Category} startTime={task.Start} endTime={task.End}/>
+          :<TaskCard title={task.Title} description={task.Description} bgColor={task.Color} category={task.Category}/>}
+          
+        </div>
+       ))}
+      </div>
+       :<main className="pt-16 min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-2xl mx-auto">
           <motion.h1
             variants={mainTextVariants}
@@ -122,12 +198,14 @@ export default function Home() {
             Build small, consistent habits that compound into extraordinary results
           </motion.p>
         </div>
-      </main>
+      </main>}
+      
 
       <motion.button
         variants={buttonVariants}
         whileHover="hover"
         whileTap="tap"
+        onClick={(e)=>{navigate('/addtask')}}
         onHoverStart={() => setIsHoveringButton(true)}
         onHoverEnd={() => setIsHoveringButton(false)}
         className="fixed bottom-8 right-8 sm:bottom-12 sm:right-12 bg-[#FAC3CD] hover:bg-[#F8A8BB] text-white rounded-full p-4 sm:p-5 shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group"
@@ -143,6 +221,16 @@ export default function Home() {
           Add New
         </motion.span>
       </motion.button>
+
+       <Profile
+        isOpen={sliderOpen}
+        onClose={() => setSliderOpen(false)}
+        nickname={user.NickName}
+        score={user.Points}
+        badge={user.Rank}
+        onLogout={handleLogout}
+      />
+
     </div>
         }
     </div>

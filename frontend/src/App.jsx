@@ -6,6 +6,7 @@ import Signup from './pages/Signup'
 import Signin from './pages/Signin'
 import Leaderboard from './pages/LeaderBoard'
 import {Toaster} from 'react-hot-toast'
+import AddTask from './pages/AddTask'
 
 const router=createBrowserRouter([
 {
@@ -30,6 +31,12 @@ const router=createBrowserRouter([
   path:'/leaderboard',
   element:<div>
     <Leaderboard/>
+  </div>
+},
+{
+  path:'/addtask',
+  element:<div>
+    <AddTask/>
   </div>
 }
 ])

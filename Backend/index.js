@@ -1,7 +1,9 @@
 const express=require('express');
 const cors=require('cors');
 const mongoose=require('mongoose');
+const {LoggedinOnly}=require('./middleware')
 const dotenv=require('dotenv')
+const cookieParser=require('cookie-parser')
 const userRouter=require('./routes/userroute')
 const taskRouter=require('./routes/taskroute')
 
@@ -20,6 +22,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+app.use(cookieParser())
 
 mongoose.connect('mongodb://127.0.0.1:27017/habitping')
 .then((res)=>{
@@ -30,7 +33,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/habitping')
 })
 
 app.use('/api/user',userRouter);
-app.use('/api/task',taskRouter);
+app.use('/api/task',LoggedinOnly,taskRouter);
 
 app.listen(PORT,()=>{
     console.log(`Server started at PORT ${PORT}`);

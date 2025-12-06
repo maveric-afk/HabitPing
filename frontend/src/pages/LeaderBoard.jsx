@@ -1,5 +1,7 @@
 import { motion } from "framer-motion"
 import { LeaderboardRow } from "../components/LeaderBoardRow"
+import { NavLink } from "react-router-dom"
+import { ArrowLeft } from "lucide-react"
 
 const leaderboardData = [
   { id: 1, rank: 1, name: "Alice Johnson", points: 2850, badge: "gold" },
@@ -45,6 +47,14 @@ export default function Leaderboard() {
         background: "linear-gradient(135deg, #FFFFFF 0%, #FAC3CD 50%, #FADFC8 100%)",
       }}
     >
+
+      <NavLink 
+            to="/"
+            className='px-6 py-4 flex items-center gap-1 rounded-2xl border border-[#ffb5de] text-[#ffb5de] absolute top-4 left-4'>
+              <ArrowLeft size={20}/>
+              Back
+            </NavLink>
+
       {/* Navbar */}
       <motion.nav
         initial={{ y: -20, opacity: 0 }}

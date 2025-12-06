@@ -27,9 +27,18 @@ const userSchema=new mongoose.Schema({
     },
     Rank:{
         type:String,
-        default:""
+        required:true,
+        default:"Ember"
     }
 },{timestamps:true});
+
+//Ember
+//Apex
+//Zenith
+//Vortex
+//Titan
+//Eternis
+//Pinnacle
 
 const userModel=mongoose.model('user',userSchema);
 module.exports=userModel;

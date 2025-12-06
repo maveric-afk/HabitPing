@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import Lottie from 'lottie-react'
+import {ArrowLeft} from 'lucide-react'
 import LoginAnim from '../../Login.json'
 import { NavLink ,useNavigate} from "react-router-dom"
 import api from "../api/axios"
@@ -67,6 +68,14 @@ export default function Signin() {
 
   return (
     <div className="min-h-screen bg-white flex font-inter">
+
+      <NavLink 
+      to="/"
+      className='px-6 py-4 flex items-center gap-1 rounded-2xl border border-[#ffb5de] text-[#ffb5de] absolute top-4 left-4'>
+        <ArrowLeft size={20}/>
+        Back
+      </NavLink>
+
         {/* Left Side - Image */}
       <motion.div
         className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-[#FAC3CD]/10 via-white to-[#FADFC8]/10 items-center justify-center p-8"

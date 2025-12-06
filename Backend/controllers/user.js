@@ -29,7 +29,7 @@ const sendmail=async(to,sub,msg)=>{
 
 async function handleGetOtp(req,res) {
     const body=req.body;
-     const otp=Math.floor(Math.random()*999999) + 100000;
+     const otp=Math.floor(Math.random()*9990) + 1000;
   await sendmail(body.email,'Otp Verification for Your HabitPing Account'
     ,`<h2>Dear ${body.nickname}</h2><br>
 
@@ -105,6 +105,19 @@ async function handleLogout(req,res) {
     return res.json({success:'Logged out'})
 }
 
+async function handleGetUser(req,res) {
+ const token=req.cookies?.token;
+ if(!token){
+  return res.json({error:"Not logged in"});
+ } 
+ const user=getUser(token);
+ if(!user){
+  return res.json({error:"Not logged in"});
+ }
+ const userData=await userModel.find({_id:user.Id});
+ return res.json({user:userData[0]});
+}
+
 module.exports={
-    handleUserSignup,handleGetOtp,handleUserSignin,handleLogout
+    handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser
 }

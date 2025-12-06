@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { useState } from "react"
 import Lottie from 'lottie-react'
 import RegisterAnim from '../../Register.json'
+import { ArrowLeft } from "lucide-react"
 import { NavLink ,useNavigate} from "react-router-dom"
 import toast from "react-hot-toast"
 import api from "../api/axios"
@@ -111,6 +112,14 @@ export default function Signup() {
             :<div></div>
         }
     <div className={`min-h-screen bg-white ${(clicked && !emailverified) ? 'blur-xs' : ''} flex font-inter`}>
+
+        <NavLink 
+              to="/"
+              className='px-6 py-4 flex items-center gap-1 rounded-2xl border border-[#ffb5de] text-[#ffb5de] absolute top-4 left-4'>
+                <ArrowLeft size={20}/>
+                Back
+              </NavLink>
+
       {/* Left Side - Form */}
       <motion.div
         className={`w-full lg:w-1/2 flex items-center justify-center px-6 py-12 sm:px-8 lg:px-12`}
