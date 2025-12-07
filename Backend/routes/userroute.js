@@ -1,5 +1,6 @@
 const express=require('express');
-const {handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser}=require('../controllers/user')
+const {LoggedinOnly}=require('../middleware')
+const {handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser,handleGetAllUsers,handleBadges}=require('../controllers/user')
 const router=express.Router();
 
 router.post('/signup',handleUserSignup)
@@ -8,5 +9,7 @@ router.post('/signin',handleUserSignin);
 
 router.get('/logout',handleLogout)
 router.get('/',handleGetUser);
+router.get('/all',LoggedinOnly,handleGetAllUsers);
+router.get('/badge',handleBadges)
 
 module.exports=router;

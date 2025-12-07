@@ -118,6 +118,48 @@ async function handleGetUser(req,res) {
  return res.json({user:userData[0]});
 }
 
+
+async function handleGetAllUsers(req,res) {
+  const allUsers=await userModel.find({});
+  return res.json({users:allUsers})
+}
+
+
+async function handleBadges(req,res) {
+  const token=req.cookies?.token;
+  const user=getUser(token);
+  const userData=await userModel.find({_id:user.Id});
+
+  let RankGot="None";
+
+  if(userData[0].Points>=25 && userData[0].Points<50 && userData[0].Rank!='Apex'){
+    await userModel.updateOne({_id:user.Id},{$set:{Rank:'Apex'}});
+    RankGot="Apex";
+  }
+  else if(userData[0].Points>=50 && userData[0].Points<74 && userData[0].Rank!='Zenith'){
+    await userModel.updateOne({_id:user.Id},{$set:{Rank:'Zenith'}});
+    RankGot="Zenith";
+  }
+  else if(userData[0].Points>=75 && userData[0].Points<99 && userData[0].Rank!='Vortex'){
+    await userModel.updateOne({_id:user.Id},{$set:{Rank:'Vortex'}});
+    RankGot="Vortex";
+  }
+  else if(userData[0].Points>=100 && userData[0].Points<149 && userData[0].Rank!='Titan'){
+    await userModel.updateOne({_id:user.Id},{$set:{Rank:'Titan'}});
+    RankGot="Titan";
+  }
+  else if(userData[0].Points>=150 && userData[0].Points<249 && userData[0].Rank!='Eternis'){
+    await userModel.updateOne({_id:user.Id},{$set:{Rank:'Eternis'}});
+    RankGot="Eternis";
+  }
+  else if(userData[0].Points>=250 && userData[0].Rank!='Pinnacle'){
+    await userModel.updateOne({_id:user.Id},{$set:{Rank:'Pinnacle'}});
+    RankGot="Pinnacle";
+  }
+
+  return res.json({Rank:RankGot})
+}
+
 module.exports={
-    handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser
+    handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser,handleGetAllUsers,handleBadges
 }

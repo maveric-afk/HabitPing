@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Trash2, Copy, Edit3, Clock, Check } from "lucide-react"
+import { Trash2, Copy, Edit3, Clock, Check,SendHorizonalIcon, SendHorizontalIcon,Clock1 } from "lucide-react"
 import Lottie from 'lottie-react'
 import one from '../../Finance & Money.json'
 import two from '../../Health & Fitness.json'
@@ -9,22 +9,26 @@ import four from '../../Learning & Study.json'
 import five from '../../Self-Care & Wellness.json'
 import six from '../../Social & Lifestyle.json'
 import seven from '../../Work & Productivity.json'
+import toast from "react-hot-toast"
+import api from "../api/axios"
+import { useNavigate } from "react-router-dom"
 
 export default function TaskCard({
+  taskId,
   title,
   description,
   startTime,
   endTime,
   category,
   bgColor,
+  state
 }) {
   const [isChecked, setIsChecked] = useState(false)
+  const [isDelayed,setIsDelayed]=useState(false)
   const [isHovering, setIsHovering] = useState(false)
-
-  const handleCheck = () => {
-    const newState = !isChecked
-    setIsChecked(newState)
-  }
+  const[isediting,setIsEditing]=useState(false);
+  const[editTitle,setEditTitle]=useState('');
+  const[editDesc,setEditDesc]=useState('');
 
   const containerVariants = {
     initial: { opacity: 0, y: 20 },
@@ -49,9 +53,103 @@ export default function TaskCard({
     },
   }
 
+  const navigate=useNavigate()
+
+  function handleCopy(e){
+    navigator.clipboard.writeText(title)
+    .then((res)=>{
+      toast.success('Copied to clipboard')
+    })
+    .catch((e)=>{
+      console.log(e);
+    })
+  }
+
+  function handleEdit(e){
+    setIsEditing(false);
+    api.patch(`/api/task/${taskId}`,{title:editTitle,desc:editDesc})
+    .then((res)=>{
+      if(res.data.error){
+        toast.error(res.data.error);
+        navigate('/signin')
+      }
+      else if(res.data.success){
+        toast.success(res.data.success);
+        title=res.data.newtitle;
+        description=res.data.newdesc;
+      }
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+  }
+
+
+  function handleDelete(e) {
+    api.delete(`/api/task/${taskId}`)
+    .then((res)=>{
+      if(res.data.error){
+        toast.error(res.data.error);
+        navigate('/signin');
+      }
+      else if(res.data.success){
+        toast.success(res.data.success);
+      }
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+  }
+
+  function handleCheck(e){
+    if(!isChecked){
+      api.patch(`/api/task/mark/${taskId}`)
+      .then((res)=>{
+        if(res.data.error){
+          toast.error(res.data.error);
+          navigate('/signin')
+        }
+        else if(res.data.success){
+          toast.success(res.data.success);
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+       setIsChecked(true);
+    }
+
+    else if(isChecked){
+      api.patch(`/api/task/unmark/${taskId}`)
+      .then((res)=>{
+        if(res.data.error){
+          toast.error(res.data.error);
+          navigate('/signin')
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+      setIsChecked(false);
+    }
+  }
+
+  useEffect(()=>{
+    if(state==1){
+      setIsChecked(true);
+    }
+    else if(state==0){
+      setIsChecked(false)
+    }
+    else{
+      setIsDelayed(true)
+    }
+  },[])
+
+
   return (
     <motion.div
-      className={`relative flex flex-col md:flex-row md:items-center gap-4 rounded-2xl p-4 md:p-6 w-full md:max-w-none transition-all duration-300 shadow-md md:shadow-lg`}
+      className={`relative ${(isChecked || isDelayed)?'grayscale-75':''} flex flex-col md:flex-row md:items-center gap-4 rounded-2xl p-4 md:p-6 w-full md:max-w-none transition-all duration-300 shadow-md md:shadow-lg`}
       variants={containerVariants}
       initial="initial"
       animate="animate"
@@ -75,7 +173,7 @@ export default function TaskCard({
         {category=='Self-Care & Wellness'?<Lottie animationData={five} loop  className="h-[6rem] sm:h-[8rem] md:h-[10rem]"/>:<div></div>}
         {category=='Social & Lifestyle'?<Lottie animationData={six} loop  className="h-[6rem] sm:h-[8rem] md:h-[10rem]"/>:<div></div>}
         {category=='Work & Productivity'?<Lottie animationData={seven} loop  className="h-[6rem] sm:h-[8rem] md:h-[10rem]"/>:<div></div>}
-        {category=='Other'?<img src='/HabitPingLOGO.png'  className="h-[6rem] sm:h-[8rem] md:h-[10rem]"/>:<div></div>}
+        {category=='Other'?<img src='/HabitPingLOGO.png'  className="h-[6rem] sm:h-[7rem] md:h-[8rem]"/>:<div></div>}
         </motion.div>
       )}
 
@@ -90,7 +188,9 @@ export default function TaskCard({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.15 }}
         >
-          {title}
+          {!isediting
+          ?title
+          :<input type="text" placeholder="Enter title" className="rounded-sm p-2 text-sm" onChange={(e)=>{setEditTitle(e.target.value)}}/>}
         </motion.h3>
 
         {/* Description */}
@@ -101,7 +201,12 @@ export default function TaskCard({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            {description}
+          {!isediting
+          ?description
+          :<div className="flex items-center gap-4">
+            <input type="text" className="rounded-sm p-2 text-sm text-gray-800" placeholder="Enter description" onChange={(e)=>{setEditDesc(e.target.value)}}/>
+            <SendHorizontalIcon className="text-[0.7rem] sm:text-[1rem] md:text-2xl" onClick={handleEdit}/>
+            </div>}
           </motion.p>
         )}
 
@@ -138,6 +243,7 @@ export default function TaskCard({
       <div className="flex-shrink-0 flex gap-2 md:flex-col md:gap-1 items-center justify-center">
         {/* Checkbox */}
         <motion.button
+          disabled={isDelayed}
           onClick={handleCheck}
           className="flex items-center justify-center "
           variants={checkboxVariants}
@@ -148,11 +254,16 @@ export default function TaskCard({
               isChecked
                 ? "bg-green-500 border-green-500"
                 : "border-gray-700 hover:border-gray-500"
+            }
+            ${isDelayed
+              ?"bg-red-500 border-red-500"
+              :""
             }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
             {isChecked && <Check size={16} className="text-white" />}
+            {isDelayed && <Clock1 size={16} className="text-white" /> }
           </motion.div>
         </motion.button>
 
@@ -164,6 +275,14 @@ export default function TaskCard({
               variants={iconVariants}
               initial="rest"
               whileHover="hover"
+              onClick={(e)=>{
+                if(isediting){
+                  setIsEditing(false);
+                }
+                else{
+                  setIsEditing(true);
+                }
+              }}
               whileTap={{ scale: 0.9 }}
             >
               <Edit3 size={20} />
@@ -176,6 +295,7 @@ export default function TaskCard({
               variants={iconVariants}
               initial="rest"
               whileHover="hover"
+              onClick={handleCopy}
               whileTap={{ scale: 0.9 }}
             >
               <Copy size={20} />
@@ -188,6 +308,7 @@ export default function TaskCard({
               variants={iconVariants}
               initial="rest"
               whileHover="hover"
+              onClick={handleDelete}
               whileTap={{ scale: 0.9 }}
             >
               <Trash2 size={20} />

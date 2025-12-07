@@ -135,7 +135,7 @@ export default function Profile({
 
                 {/* Badge Section */}
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Badge & Rank</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Rank</p>
                   <motion.div whileHover={{ y: -4 }} className="rounded-2xl p-4" style={{ backgroundColor: "#fadfc8" }}>
                     <div className="flex items-center gap-4">
                       <div className="flex-shrink-0">

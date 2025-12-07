@@ -9,6 +9,7 @@ import Profile from "../components/Profile"
 import api from "../api/axios"
 import toast from "react-hot-toast"
 import TaskCard from "../components/TaskCard"
+import BadgeUnlock from "../components/BadgeUnlock"
 
 export default function Home() {
   const [isHoveringButton, setIsHoveringButton] = useState(false)
@@ -17,6 +18,7 @@ export default function Home() {
   const[user,setUser]=useState({});
   const[alltasks,setAlltasks]=useState([])
   const [sliderOpen, setSliderOpen] = useState(false)
+  const [badgegot,setBadgeGot]=useState("");
 
   const navigate=useNavigate();
 
@@ -51,6 +53,20 @@ export default function Home() {
         setAlltasks(res.data.tasks);
       }
     })
+  },[])
+
+
+  useEffect(()=>{
+    api.get('/api/user/badge')
+    .then((res)=>{
+      if(res.data.Rank && res.data.Rank!="None"){
+        setBadgeGot(res.data.Rank)
+      }
+    })
+    .catch((e)=>{
+      console.log(e);
+    })
+
   },[])
 
   // Animation variants
@@ -117,14 +133,21 @@ export default function Home() {
         {
            loading
         ?<LoadingScreen/>
-        :<div className="min-h-screen bg-white font-sans">
+        :<div className="min-h-screen pb-8 bg-white font-sans">
             <Background/>
+
+            {badgegot!=""
+            ?<BadgeUnlock badgeTitle={badgegot} isVisible={true}/>
+            :<div></div>}
 
       <motion.nav
         variants={navbarVariants}
         initial="hidden"
         animate="visible"
-        className="fixed top-0 left-0 right-0 z-50 p-4 bg-white border-b border-gray-100 shadow-sm"
+        className="fixed top-0 left-0 right-0 z-50 p-4 font-inter bg-white border-b  border-gray-100 shadow-sm"
+        style={{
+        background: "linear-gradient(135deg, #FFFFFF 0%, #FFE8EC 50%, #FFF5ED 100%)",
+      }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -167,13 +190,17 @@ export default function Home() {
        {userTasks.map((task)=>(
         <div>
           {task.Start
-          ?<TaskCard title={task.Title} description={task.Description} bgColor={task.Color} category={task.Category} startTime={task.Start} endTime={task.End}/>
-          :<TaskCard title={task.Title} description={task.Description} bgColor={task.Color} category={task.Category}/>}
+          ?<TaskCard taskId={task._id} title={task.Title} description={task.Description} bgColor={task.Color} category={task.Category} startTime={task.Start} endTime={task.End} state={task.State}/>
+          :<TaskCard taskId={task._id} title={task.Title} description={task.Description} bgColor={task.Color} category={task.Category} state={task.State}/>}
           
         </div>
        ))}
       </div>
-       :<main className="pt-16 min-h-screen flex items-center justify-center px-4">
+       :<main 
+        style={{
+        background: "linear-gradient(135deg, #FFFFFF 0%, #fffcfd 50%, #faf7f5 100%)",
+      }}
+       className="pt-16 min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-2xl mx-auto">
           <motion.h1
             variants={mainTextVariants}

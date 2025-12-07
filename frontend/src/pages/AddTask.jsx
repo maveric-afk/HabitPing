@@ -48,14 +48,19 @@ export default function AddTask() {
   const onSubmit = (data) => {
     const startTime=data.startTime;
     const endTime=data.endTime;
+
     if(startTime.split(":")[0]>endTime.split(":")[0] || (startTime.split(":")[0]==endTime.split(":")[0] && startTime.split(":")[1]>endTime.split(":")[1])){
         setTimeError(true);
         return;
     }
+
     const date=new Date().getDate();
     const month=new Date().getMonth();
-    data.startTime=`${data.startTime} ${date} ${month+1}`;
-    data.endTime=`${data.endTime} ${date} ${month+1}`;
+    if(data.startTime && data.endTime){
+       data.startTime=`${data.startTime} ${date} ${month+1}`;
+       data.endTime=`${data.endTime} ${date} ${month+1}`;
+    }
+   
     api.post('/api/task/addnew',data)
     .then((res)=>{
         if(res.data.error){
@@ -178,6 +183,7 @@ export default function AddTask() {
                 <Controller
                   name="description"
                   control={control}
+                  rules={{ required: "Description is required" }}
                   render={({ field }) => (
                     <motion.textarea
                       whileFocus={{ scale: 1.02 }}

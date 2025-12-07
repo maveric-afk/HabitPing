@@ -32,13 +32,5 @@ const userSchema=new mongoose.Schema({
     }
 },{timestamps:true});
 
-//Ember
-//Apex
-//Zenith
-//Vortex
-//Titan
-//Eternis
-//Pinnacle
-
 const userModel=mongoose.model('user',userSchema);
 module.exports=userModel;

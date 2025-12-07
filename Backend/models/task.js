@@ -7,6 +7,7 @@ const taskSchema=new mongoose.Schema({
     },
     Description:{
         type:String,
+        required:true
     },
     Start:{
         type:String,
@@ -18,6 +19,10 @@ const taskSchema=new mongoose.Schema({
         type:String,
         required:true,
         default:'Other'
+    },
+    CreatedBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'users'
     },
     Color:{
         type:String,

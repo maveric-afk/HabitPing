@@ -5,7 +5,8 @@ const {LoggedinOnly}=require('./middleware')
 const dotenv=require('dotenv')
 const cookieParser=require('cookie-parser')
 const userRouter=require('./routes/userroute')
-const taskRouter=require('./routes/taskroute')
+const taskRouter=require('./routes/taskroute');
+const { worker1 } = require('./service');
 
 const app=express();
 const PORT=5000;
@@ -34,6 +35,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/habitping')
 
 app.use('/api/user',userRouter);
 app.use('/api/task',LoggedinOnly,taskRouter);
+
+const timer=setInterval(() => {
+    worker1()
+}, 40*1000);
 
 app.listen(PORT,()=>{
     console.log(`Server started at PORT ${PORT}`);

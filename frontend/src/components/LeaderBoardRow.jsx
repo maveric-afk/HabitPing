@@ -1,38 +1,12 @@
-"use client"
+import { motion } from 'framer-motion'
 
-import { motion } from "framer-motion"
-
-export function LeaderboardRow({ entry, index }) {
-  const getBadgeDisplay = (type) => {
-    const badges = {
-      gold: { emoji: "🥇", bg: "bg-yellow-50", text: "text-yellow-700" },
-      silver: { emoji: "🥈", bg: "bg-gray-100", text: "text-gray-700" },
-      bronze: { emoji: "🥉", bg: "bg-orange-50", text: "text-orange-700" },
-    }
-    const badge = badges[type]
-    return (
-      <span
-        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${badge.bg} ${badge.text}`}
-      >
-        {badge.emoji}
-        {type.charAt(0).toUpperCase() + type.slice(1)}
-      </span>
-    )
-  }
-
-  const getRankColor = (rank) => {
-    if (rank === 1) return "text-yellow-600"
-    if (rank === 2) return "text-gray-500"
-    if (rank === 3) return "text-orange-600"
-    return "text-slate-600"
-  }
-
+export default function LeaderboardRow({ entry, index }) {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", damping: 15, stiffness: 300 }}
-      className="group"
+      className="group font-inter"
     >
       <div
         className="rounded-xl p-4 sm:p-6 cursor-pointer shadow-sm hover:shadow-md transition-shadow duration-300"
@@ -43,41 +17,45 @@ export function LeaderboardRow({ entry, index }) {
       >
         {/* Mobile Layout */}
         <div className="md:hidden space-y-3">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`text-lg sm:text-xl font-bold ${getRankColor(entry.rank)}`}>
-                #{entry.rank}
+          <div className="flex items-center justify-between">
+
+               <div className='flex items-center gap-2'>
+                <span>{index+1}.</span>
+                <h3 className="font-semibold text-slate-800 text-sm sm:text-base">{entry.NickName}</h3>
               </div>
-              <div>
-                <h3 className="font-semibold text-slate-800 text-sm sm:text-base">{entry.name}</h3>
-              </div>
-            </div>
-            {entry.badge && getBadgeDisplay(entry.badge)}
-          </div>
-          <div className="flex items-center justify-between pl-10">
-            <span className="text-xs text-slate-500">Points</span>
-            <span className="font-bold text-slate-800">
-              {entry.points.toLocaleString()}
+
+            <span className="font-bold text-[0.8rem] sm:text-[1.2rem] text-slate-800">
+              {entry.Points.toLocaleString()}
             </span>
+
+              <div className={`text-[0.7rem] flex flex-col items-center sm:text-lg font-bold`}>
+                <img className='rounded-full h-[3rem] sm:h-[4rem]' src={`/${entry.Rank}.jpg`}/>
+                {entry.Rank}
+              </div>
+             
           </div>
+          
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden md:grid grid-cols-12 gap-3 sm:gap-4 items-center">
-          <div className={`col-span-1 text-lg font-bold ${getRankColor(entry.rank)}`}>
-            #{entry.rank}
+        <div className="hidden md:flex justify-around gap-6 items-center">
+        
+          <div className="flex items-center gap-4">
+             <span>{index+1}.</span>
+            <h3 className="font-bold text-slate-800 text-sm sm:text-lg md:text-[1.5rem]">{entry.NickName}</h3>
           </div>
-          <div className="col-span-5">
-            <h3 className="font-semibold text-slate-800 text-sm sm:text-base">{entry.name}</h3>
-          </div>
-          <div className="col-span-3">
-            <span className="font-bold text-slate-800 text-sm sm:text-base">
-              {entry.points.toLocaleString()}
+
+          <div>
+            <span className="font-bold text-slate-800 text-sm sm:text-[1.6rem]">
+              {entry.Points.toLocaleString()}
             </span>
           </div>
-          <div className="col-span-3">
-            {entry.badge && getBadgeDisplay(entry.badge)}
+
+          <div className={`text-lg font-bold flex flex-col justify-center items-center`}>
+            <img className='rounded-full h-[6rem]' src={`/${entry.Rank}.jpg`}/>
+            {entry.Rank}
           </div>
+
         </div>
       </div>
     </motion.div>
