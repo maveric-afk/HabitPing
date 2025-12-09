@@ -1,36 +1,39 @@
-const Brevo=require('@getbrevo/brevo');
+const Brevo = require('@getbrevo/brevo');
 const userModel = require('../models/user');
 const taskModel = require('../models/task');
 const { handleMarkTaskDelay } = require('./task');
+const admin = require("firebase-admin");
+const serviceAccount = require("../habitping-firebase-adminsdk-fbsvc-400edee1fd.json");
+const { getMessaging } = require('firebase-admin/messaging');
 
 
 const apiInstance = new Brevo.TransactionalEmailsApi();
 
 apiInstance.setApiKey(
-  Brevo.TransactionalEmailsApiApiKeys.apiKey,
-  process.env.BREVO_API_KEY
+    Brevo.TransactionalEmailsApiApiKeys.apiKey,
+    process.env.BREVO_API_KEY
 );
 
-const sendmail=async(to,sub,msg)=>{
+const sendmail = async (to, sub, msg) => {
     try {
-        const sendSmtpMail={
-        sender:{email:'guptachirag965@gmail.com',name:"HabitPing"},
-        to:[{email:to}],
-        subject:sub,
-        htmlContent:msg
-    }
-    const data=await apiInstance.sendTransacEmail(sendSmtpMail);
-    console.log('Email sent: ',data.messageId || data)
+        const sendSmtpMail = {
+            sender: { email: 'guptachirag965@gmail.com', name: "HabitPing" },
+            to: [{ email: to }],
+            subject: sub,
+            htmlContent: msg
+        }
+        const data = await apiInstance.sendTransacEmail(sendSmtpMail);
+        console.log('Email sent: ', data.messageId || data)
     } catch (error) {
-        console.error('Email failed',error)
+        console.error('Email failed', error)
     }
 }
 
-async function handleSendInitialReminder(taskId,userId) {
-    const taskData=await taskModel.find({_id:taskId})
-    const userData=await userModel.find({_id:userId})
+async function handleSendInitialReminder(taskId, userId) {
+    const taskData = await taskModel.find({ _id: taskId })
+    const userData = await userModel.find({ _id: userId })
 
-    sendmail(userData[0].Email,'It"s Time for Your HabitPing Task ✨',
+    sendmail(userData[0].Email, 'It"s Time for Your HabitPing Task ✨',
         `
          <h2>Hi ${userData[0].NickName}</h2>
         <p>This is a friendly reminder from HabitPing that the scheduled start time for your task has arrived.</p>
@@ -45,12 +48,11 @@ async function handleSendInitialReminder(taskId,userId) {
 
 }
 
-async function handleSendfinalReminder(taskId,userId) {
-    const taskData=await taskModel.find({_id:taskId})
-    const userData=await userModel.find({_id:userId})
+async function handleSendfinalReminder(taskId, userId) {
+    const taskData = await taskModel.find({ _id: taskId })
+    const userData = await userModel.find({ _id: userId })
 
-    handleMarkTaskDelay(taskId,userId);
-    sendmail(userData[0].Email,'You Missed a HabitPing Deadline ⏳',
+    sendmail(userData[0].Email, 'You Missed a HabitPing Deadline ⏳',
         `
          <h2>Hi ${userData[0].NickName}</h2>
         <p>It looks like the scheduled end time for your task has passed.</p>
@@ -65,4 +67,46 @@ async function handleSendfinalReminder(taskId,userId) {
 
 }
 
-module.exports={handleSendInitialReminder,handleSendfinalReminder}
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+async function handleInitialPushNotification(taskId, userId) {
+    console.log('initial push notification sent')
+    const userData = await userModel.find({ _id: userId });
+    const taskData = await taskModel.find({ _id: taskId });
+
+    const tokens = userData[0].FcmTokens;
+    if (!tokens || tokens.length == 0) return;
+
+    const messaging = getMessaging();
+    await messaging.sendEachForMulticast({
+        tokens,
+        notification: {
+            title: "HabitPing",
+            body: `Time for your task: ${taskData[0].Title}`,
+        },
+    });
+}
+
+async function handleFinalPushNotification(taskId, userId) {
+    console.log('Final push notification sent')
+    const userData = await userModel.find({ _id: userId });
+    const taskData = await taskModel.find({ _id: taskId });
+
+    const tokens = userData[0].FcmTokens;
+    if (!tokens || tokens.length == 0) return;
+
+    handleMarkTaskDelay(taskId, userId);
+    const messaging = getMessaging();
+    await messaging.sendEachForMulticast({
+        tokens,
+        notification: {
+            title: "HabitPing",
+            body: `You missed it and lost 2 points: ${taskData[0].Title}`,
+        },
+    });
+}
+
+module.exports = { handleSendInitialReminder, handleSendfinalReminder, handleInitialPushNotification, handleFinalPushNotification }

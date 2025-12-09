@@ -2,6 +2,8 @@ import { motion } from "framer-motion"
 import { User, Trophy, Plus } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { useState } from "react"
+import {messaging} from '../firebase'
+import {getToken} from 'firebase/messaging'
 import LoadingScreen from "../components/LoadingScreen"
 import Background from '../components/Background'
 import { useNavigate } from "react-router-dom"
@@ -46,8 +48,7 @@ export default function Home() {
     api.get('/api/task/all')
     .then((res)=>{
       if(res.data.error){
-        toast.error(res.data.error);
-        navigate('/signin')
+        
       }
       else if(res.data.tasks){
         setAlltasks(res.data.tasks);
@@ -127,6 +128,30 @@ export default function Home() {
       userTasks.push(task);
     }
   })
+
+
+  async function requestPermission() {
+    const permission=await Notification.requestPermission();
+    if(permission==='granted'){
+      const token=await getToken(messaging,{vapidKey:'BEho_O3PatDWsfEYvYrqiT8z37sucwe386AK9QvfBQcpH0TR_xtnihDPd8OnmZjlLmasRaprC7NXu6aey7h8Ptw'})
+      api.patch('/api/user/fcmtoken',{fcmToken:token})
+      .then((res)=>{
+
+      })
+      .catch((e)=>{
+        console.log(e);
+      })
+    }
+   else if(permission==='denied'){
+   
+   }
+  }
+
+  useEffect(()=>{
+    if(loggedIn){
+      requestPermission()
+    }
+  },[loggedIn])
  
   return (
     <div>

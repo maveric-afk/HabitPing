@@ -1,4 +1,4 @@
-const { handleSendInitialReminder, handleSendfinalReminder } = require("./controllers/reminder");
+const { handleSendInitialReminder, handleSendfinalReminder,handleFinalPushNotification,handleInitialPushNotification } = require("./controllers/reminder");
 const taskModel = require("./models/task");
 const userModel = require('./models/user');
 
@@ -7,7 +7,6 @@ async function worker1() {
     const currHr = new Date().getHours();
     const currMin = new Date().getMinutes();
     const currDay = new Date().getDate();
-    const currMonth = new Date().getMonth() + 1;
     console.log('Worker1 is running')
     const alltasks = await taskModel.find({});
     alltasks.forEach((task) => {
@@ -34,11 +33,13 @@ async function worker1() {
         }
 
 
-        if (startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(startHr) && Number(currMin) === Number(startMin)) {
+        if (task.State==0 && startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(startHr) && Number(currMin) === Number(startMin)) {
             handleSendInitialReminder(task._id, task.CreatedBy);
+            handleInitialPushNotification(task._id, task.CreatedBy);
         }
-        if (startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(endHr) && Number(currMin) === Number(endMin)) {
+        if (task.State==0 && startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(endHr) && Number(currMin) === Number(endMin) + 3) {
             handleSendfinalReminder(task._id, task.CreatedBy);
+            handleFinalPushNotification(task._id, task.CreatedBy);
         }
 
     })

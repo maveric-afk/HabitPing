@@ -81,7 +81,9 @@ async function handleUnMarkTask(req,res) {
 
 async function handleMarkTaskDelay(taskId,userId) {
     await taskModel.updateOne({_id:taskId},{$set:{State:2}});
-    await userModel.updateOne({_id:userId},{$inc:{Points:-2}});
+    const userData=await userModel.find({_id:userId});
+    if(userData[0].Points>=2)
+    {await userModel.updateOne({_id:userId},{$inc:{Points:-2}});}
     return;
 }
 

@@ -160,6 +160,22 @@ async function handleBadges(req,res) {
   return res.json({Rank:RankGot})
 }
 
+async function handleAddFcmtoken(req,res) {
+  const token=req.cookies?.token;
+  const user=getUser(token);
+  const {fcmToken}=req.body;
+  await userModel.updateOne({_id:user.Id},{$addToSet:{FcmTokens:fcmToken}});
+  return res.end();
+}
+
+async function handleDeleteFcmtoken(req,res) {
+  const token=req.cookies?.token;
+  const user=getUser(token);
+  const {fcmToken}=req.body;
+  await userModel.updateOne({_id:user.Id},{$pull:{FcmTokens:fcmToken}});
+  return res.end();
+}
+
 module.exports={
-    handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser,handleGetAllUsers,handleBadges
+    handleUserSignup,handleGetOtp,handleUserSignin,handleLogout,handleGetUser,handleGetAllUsers,handleBadges,handleAddFcmtoken,handleDeleteFcmtoken
 }

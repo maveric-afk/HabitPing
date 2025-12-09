@@ -9,7 +9,7 @@ const taskRouter=require('./routes/taskroute');
 const { worker1 } = require('./service');
 
 const app=express();
-const PORT=5000;
+const PORT=process.env.PORT || 5000;
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(cookieParser())
 
-mongoose.connect('mongodb://127.0.0.1:27017/habitping')
+mongoose.connect(process.env.MONGO_URI)
 .then((res)=>{
     console.log(`MongoDB connected`)
 })
@@ -38,7 +38,7 @@ app.use('/api/task',LoggedinOnly,taskRouter);
 
 const timer=setInterval(() => {
     worker1()
-}, 40*1000);
+}, 60*1000);
 
 app.listen(PORT,()=>{
     console.log(`Server started at PORT ${PORT}`);
