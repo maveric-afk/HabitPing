@@ -34,10 +34,12 @@ async function worker1() {
 
 
         if (task.State==0 && startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(startHr) && Number(currMin) === Number(startMin)) {
+            console.log('initial reminders sent')
             handleSendInitialReminder(task._id, task.CreatedBy);
             handleInitialPushNotification(task._id, task.CreatedBy);
         }
         if (task.State==0 && startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(endHr) && Number(currMin) === Number(endMin) + 3) {
+            console.log('final reminders sent')
             handleSendfinalReminder(task._id, task.CreatedBy);
             handleFinalPushNotification(task._id, task.CreatedBy);
         }
