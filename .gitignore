@@ -9,6 +9,8 @@ build/
 out/
 .cache/
 
+backend/habitping-firebase-adminsdk-fbsvc-400edee1fd.json
+
 # Env
 backend/.env
 frontend/.env
