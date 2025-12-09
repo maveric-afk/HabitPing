@@ -27,19 +27,20 @@ app.use(express.urlencoded({extended:false}));
 app.use(cookieParser())
 
 mongoose.connect(process.env.MONGO_URI)
-.then((res)=>{
-    console.log(`MongoDB connected`);
-})
-.catch((e)=>{
-    console.log(e);
-})
+  .then(() => {
+    console.log("MongoDB connected");
+
+    setInterval(() => {
+      console.log("Running worker...");
+      worker1();
+    }, 60 * 1000);
+  })
+  .catch(err => console.log("Mongo Error", err));
+
 
 app.use('/api/user',userRouter);
 app.use('/api/task',LoggedinOnly,taskRouter);
 
-const timer=setInterval(() => {
-    worker1()
-}, 60*1000);
 
 app.listen(PORT,()=>{
     console.log(`Server started at PORT ${PORT}`);

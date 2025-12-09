@@ -7,7 +7,9 @@ const { getMessaging } = require('firebase-admin/messaging');
 const dotenv= require('dotenv');
 
 dotenv.config();
-const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN)
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_ADMIN.replace(/\\n/g, "\n")
+);
 
 
 
