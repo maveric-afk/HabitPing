@@ -29,10 +29,6 @@ app.use(cookieParser())
 mongoose.connect(process.env.MONGO_URI)
 .then((res)=>{
     console.log(`MongoDB connected`);
-    const timer=setInterval(() => {
-    worker1()
-}, 60*1000);
-
 })
 .catch((e)=>{
     console.log(e);
@@ -40,6 +36,10 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use('/api/user',userRouter);
 app.use('/api/task',LoggedinOnly,taskRouter);
+
+const timer=setInterval(() => {
+    worker1()
+}, 60*1000);
 
 app.listen(PORT,()=>{
     console.log(`Server started at PORT ${PORT}`);
