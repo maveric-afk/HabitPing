@@ -127,7 +127,13 @@ async function handleGetAllUsers(req,res) {
 
 async function handleBadges(req,res) {
   const token=req.cookies?.token;
+  if(!token){
+    return res.end();
+  }
   const user=getUser(token);
+  if(!user){
+    return res.end();
+  }
   const userData=await userModel.find({_id:user.Id});
 
   let RankGot="None";
@@ -162,7 +168,13 @@ async function handleBadges(req,res) {
 
 async function handleAddFcmtoken(req,res) {
   const token=req.cookies?.token;
+  if(!token){
+    return res.end();
+  }
   const user=getUser(token);
+  if(!user){
+    return res.end();
+  }
   const {fcmToken}=req.body;
   await userModel.updateOne({_id:user.Id},{$addToSet:{FcmTokens:fcmToken}});
   return res.end();
@@ -170,7 +182,13 @@ async function handleAddFcmtoken(req,res) {
 
 async function handleDeleteFcmtoken(req,res) {
   const token=req.cookies?.token;
+  if(!token){
+    return res.end();
+  }
   const user=getUser(token);
+  if(!user){
+    return res.end();
+  }
   const {fcmToken}=req.body;
   await userModel.updateOne({_id:user.Id},{$pull:{FcmTokens:fcmToken}});
   return res.end();
