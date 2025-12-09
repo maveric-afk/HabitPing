@@ -57,8 +57,8 @@ export default function AddTask() {
     const date=new Date().getDate();
     const month=new Date().getMonth();
     if(data.startTime && data.endTime){
-       data.startTime=`${data.startTime} ${date} ${month+1}`;
-       data.endTime=`${data.endTime} ${date} ${month+1}`;
+       data.startTime=`${data.startTime} ${date}`;
+       data.endTime=`${data.endTime} ${date}`;
     }
    
     api.post('/api/task/addnew',data)

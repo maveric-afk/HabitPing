@@ -115,7 +115,7 @@ async function handleFinalPushNotification(taskId, userId) {
     const tokens = userData[0].FcmTokens;
     if (!tokens || tokens.length == 0) return;
 
-    handleMarkTaskDelay(taskId, userId);
+   await handleMarkTaskDelay(taskId, userId);
     const messaging = getMessaging();
     await messaging.sendEachForMulticast({
         tokens,

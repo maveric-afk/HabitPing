@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const userRouter = require('./routes/userroute')
 const taskRouter = require('./routes/taskroute');
 const { worker1 } = require('./service');
+const cron = require('node-cron')
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,9 +30,10 @@ app.use(cookieParser())
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected");
-    const timer = setInterval(() => {
+    cron.schedule("* * * * *", () => {
+      console.log("Task running every minute:", new Date());
       worker1();
-    }, 60 * 1000);
+    });
   })
   .catch(err => console.log("Mongo Error", err));
 
