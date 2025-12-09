@@ -3,8 +3,12 @@ const userModel = require('../models/user');
 const taskModel = require('../models/task');
 const { handleMarkTaskDelay } = require('./task');
 const admin = require("firebase-admin");
-const serviceAccount = require("../habitping-firebase-adminsdk-fbsvc-400edee1fd.json");
 const { getMessaging } = require('firebase-admin/messaging');
+const dotenv= require('dotenv');
+
+dotenv.config();
+const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN)
+
 
 
 const apiInstance = new Brevo.TransactionalEmailsApi();
