@@ -14,6 +14,7 @@ const PORT=process.env.PORT || 5000;
 dotenv.config();
 
 const allowedOrigins=[
+    'https://habitping.vercel.app/',
     'http://localhost:5173',
     'http://localhost:5174'
 ]
