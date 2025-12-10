@@ -29,7 +29,12 @@ async function worker1() {
            await handleSendInitialReminder(task._id, task.CreatedBy);
            await handleInitialPushNotification(task._id, task.CreatedBy);
         }
-        if (task.State==0 && startTime != "" && endTime != "" && Number(currDay) === Number(taskDay) && Number(currHr) === Number(endHr) && Number(currMin) === (Number(endMin) + 3)%60) {
+        if (task.State==0 && startTime != "" && endTime != "" && Number(endMin)<57 && Number(currDay) === Number(taskDay) &&  Number(currHr) === Number(endHr) && Number(currMin) === Number(endMin)) {
+            console.log('final reminders sent')
+           await handleSendfinalReminder(task._id, task.CreatedBy);
+           await handleFinalPushNotification(task._id, task.CreatedBy);
+        }
+        if (task.State==0 && startTime != "" && endTime != "" && Number(endMin)>=57 && Number(currDay) === Number(taskDay) &&  Number(currHr) === (Number(endHr)+1)%24 && Number(currMin) === (Number(endMin)+3)%60) {
             console.log('final reminders sent')
            await handleSendfinalReminder(task._id, task.CreatedBy);
            await handleFinalPushNotification(task._id, task.CreatedBy);

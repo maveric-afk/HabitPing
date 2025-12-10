@@ -121,6 +121,7 @@ async function handleGetUser(req,res) {
 
 async function handleGetAllUsers(req,res) {
   const allUsers=await userModel.find({});
+ allUsers.sort((userA, userB) => userB.Points - userA.Points);
   return res.json({users:allUsers})
 }
 
@@ -175,8 +176,11 @@ async function handleAddFcmtoken(req,res) {
   if(!user){
     return res.end();
   }
+  const userData=await userModel.find({_id:user.Id});
   const {fcmToken}=req.body;
-  await userModel.updateOne({_id:user.Id},{$addToSet:{FcmTokens:fcmToken}});
+  if(!userData[0].FcmTokens.includes(fcmToken)){
+     await userModel.updateOne({_id:user.Id},{$push:{FcmTokens:fcmToken}});
+  }
   return res.end();
 }
 
