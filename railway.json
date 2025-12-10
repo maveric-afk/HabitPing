@@ -1,9 +1,0 @@
-{
-  "build": {
-    "rootDirectory": "Backend"
-  },
-  "deploy": {
-    "startCommand": "npm start",
-    "installCommand": "npm install"
-  }
-}

@@ -124,7 +124,7 @@ export default function Home() {
   const userTasks=[];
 
   alltasks.forEach((task)=>{
-    if(user && user.Tasks.includes(task._id)){
+    if(user?.Tasks?.includes(task._id)){
       userTasks.push(task);
     }
   })
